@@ -2,7 +2,7 @@ import librosa
 import librosa.display
 import queue
 import numpy as np
-import scipy.signal as sp
+import scipy.ndimage as sp
 import pyaudiowpatch as pyaudio
 import matplotlib.pyplot as plt
 from PyQt6.QtWidgets import QWidget, QPushButton, QFileDialog, QApplication, QVBoxLayout, QFileDialog
@@ -82,18 +82,34 @@ class FileInputterPage(QWidget):
     def create_spectro(self, audio): 
         audio_paths = audio
         for audio_path in audio_paths:
+
+            #Creating spectrogram
             y, sr = librosa.load(audio_path)
-            print(np.shape(y))
             spectro = librosa.feature.melspectrogram(y=y, sr=sr)
-            print(spectro.shape())
             spectro_db = librosa.power_to_db(spectro, ref=np.max)
-            print(spectro_db.shape())
-            # peaks = sp.find_peaks(spectro_db)
+            print(np.shape(spectro_db))
+
+            #Creating peaks of spectrogram
+            peaks = sp.maximum_filter(spectro_db, size=(10, 10)) == spectro_db
+            threshold = spectro_db > -40
+            peak_indexes = np.argwhere(peaks & threshold)
+            print(np.shape(peak_indexes))
+
+            #Plotting spectrogram
             plt.figure(figsize=(10,4))
             librosa.display.specshow(spectro_db, x_axis="time", y_axis="mel", sr=sr)
-            # plt.plot(peaks, y[peaks])
             plt.colorbar(format="%+2.0f dB")
             plt.title("Mel Spectro")
+
+            #Plotting peaks
+            x_axis_time = peak_indexes[:, 1]
+            y_axis_freq = peak_indexes[:, 0]
+
+            true_x_time = librosa.frames_to_time(x_axis_time, sr=sr)
+            true_y_freq = librosa.mel_frequencies(n_mels=spectro_db.shape[0])[y_axis_freq]
+
+            plt.scatter(true_x_time, true_y_freq, color='red', s=10)
+
             plt.show()
 
 
