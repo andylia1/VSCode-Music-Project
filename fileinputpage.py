@@ -95,6 +95,10 @@ class FileInputterPage(QWidget):
 
         results = self.match_fingerprints(fingerprints)
 
+        if results is None:
+            QMessageBox.information(self, "No match", "No matching song was found.")
+            return 
+
         song_id, song_name, offset_difference, matches = results
 
         QMessageBox.information(self, "Song Name", f"The song is {song_name}")
@@ -281,7 +285,7 @@ class FileInputterPage(QWidget):
 
 
     def open_file(self):
-        audio_path, _ = QFileDialog.getOpenFileNames(self, "Select Audio File", r"C:\Users\andyl\VSCode Music Project\assets", "Audio Files (*.mp3)")
+        audio_path, _ = QFileDialog.getOpenFileNames(self, "Select Audio File", str(Path.home()), "Audio Files (*.mp3)")
         return audio_path
     
         

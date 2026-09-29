@@ -2,7 +2,7 @@ import os
 import sqlite3
 from pathlib import Path
 
-APP_PATH = Path(os.environ["LocalAppData"])/ "SongRecognizer"
+APP_PATH = Path(os.environ["LOCALAPPDATA"])/"SongRecognizer"
 DB_PATH = APP_PATH / "fingerprints.db"
 
 
