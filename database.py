@@ -1,14 +1,16 @@
 import os
 import sqlite3
+from pathlib import Path
 
-DB_PATH = os.path.join('database', 'fingerprints.db')
+APP_PATH = Path(os.environ["LocalAppData"])/ "SongRecognizer"
+DB_PATH = APP_PATH / "fingerprints.db"
 
 
 
 
 def create_database():
     #Creates a folder in  project directory for a sql db file
-    os.makedirs('database', exist_ok=True)
+    APP_PATH.mkdir(parents=True, exist_ok=True)
 
     connection = sqlite3.connect(DB_PATH)
     cursor = connection.cursor()
